@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Random;
 
@@ -34,14 +32,15 @@ public class VKApiService {
 
     public void sendMessage(int userId, String message) throws IOException {
 
-        StringBuilder postData = new StringBuilder();
-        postData.append("user_id=").append(userId)
-                .append("&message=").append(URLEncoder.encode(message, StandardCharsets.UTF_8))
-                .append("&random_id=").append(RANDOM_ID.nextInt())
-                .append("&access_token=").append(vkAccessKey)
-                .append("&v=").append(apiVersion);
+        VkRequestData vkRequestData = new VkRequestData(
+                userId,
+                message,
+                RANDOM_ID.nextInt(),
+                vkAccessKey,
+                apiVersion
+        );
 
-        byte[] postDataBytes = postData.toString().getBytes(StandardCharsets.UTF_8);
+        byte[] postDataBytes = vkRequestData.toBytes();
 
         URL url = new URL(REQUEST_URL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
